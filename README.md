@@ -34,6 +34,10 @@ Expo (React Native) · Expo Router · SQLite · Zustand · dayjs · OpenRouter A
 
 Each phase is a self-contained OpenSpec change in `openspec/changes/`. See `CLAUDE.md` for how to work with the codebase.
 
+## License
+
+[PolyForm Noncommercial 1.0.0](LICENSE) — free to use for personal and non-commercial purposes.
+
 ## Post-MVP ideas
 
 - In-app correlation analysis (which foods precede ache events?)
