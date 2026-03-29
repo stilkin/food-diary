@@ -1,0 +1,29 @@
+schema: spec-driven
+
+context: |
+  App: A mobile food diary for tracking meals, symptoms, and intermittent fasting windows.
+  Medical purpose: helps users identify food-triggered bellyache; diary can be exported to PDF
+  for sharing with a dietician or physician.
+
+  Tech stack:
+  - Expo (React Native) with Expo Router
+  - expo-sqlite — structured event data
+  - expo-file-system — image files on disk, paths referenced in SQLite
+  - expo-notifications — local scheduled alerts (fasting window)
+  - expo-camera + expo-image-manipulator — photo capture and resize
+  - expo-print + expo-sharing — PDF export
+  - Zustand — app state
+  - dayjs — date/time formatting
+  - OpenRouter API — optional AI photo analysis (user-provided key, graceful fallback)
+
+  Core principle: simple, maintainable, elegant.
+  Less code means less to break and less to maintain. Prefer the straightforward solution.
+  Avoid abstractions that don't earn their complexity. Avoid dependencies that don't earn
+  their place. When in doubt, do less.
+
+  Conventions:
+  - TypeScript
+  - Functional components and hooks throughout
+  - SQLite for all persistent data; Zustand for ephemeral UI state
+  - Images stored as files on disk, referenced by path in SQLite
+  - No premature abstraction — share code only when there are 3+ genuine use cases
