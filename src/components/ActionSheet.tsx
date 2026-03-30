@@ -6,19 +6,26 @@ import {
   TouchableWithoutFeedback,
   StyleSheet,
 } from 'react-native';
+import { useAppStore } from '@/store';
+import type { EventType } from '@/types';
 
 interface ActionSheetProps {
   visible: boolean;
   onClose: () => void;
+  onSelect: (key: EventType) => void;
 }
 
-const OPTIONS = [
-  { label: 'Food', key: 'food' },
-  { label: 'Ache', key: 'ache' },
-  { label: 'Toilet break', key: 'toilet' },
-] as const;
+const BASE_OPTIONS = [
+  { label: 'Food', key: 'food' as const },
+  { label: 'Ache', key: 'ache' as const },
+];
 
-export function ActionSheet({ visible, onClose }: ActionSheetProps) {
+const TOILET_OPTION = { label: 'Toilet break', key: 'toilet' as const };
+
+export function ActionSheet({ visible, onClose, onSelect }: ActionSheetProps) {
+  const toiletEnabled = useAppStore((s) => s.settings.toiletTrackingEnabled);
+  const options = toiletEnabled ? [...BASE_OPTIONS, TOILET_OPTION] : BASE_OPTIONS;
+
   return (
     <Modal
       visible={visible}
@@ -31,11 +38,14 @@ export function ActionSheet({ visible, onClose }: ActionSheetProps) {
       </TouchableWithoutFeedback>
 
       <View style={styles.sheet}>
-        {OPTIONS.map((opt) => (
+        {options.map((opt) => (
           <TouchableOpacity
             key={opt.key}
             style={styles.option}
-            onPress={onClose}
+            onPress={() => {
+              onSelect(opt.key);
+              onClose();
+            }}
           >
             <Text style={styles.optionText}>{opt.label}</Text>
           </TouchableOpacity>

@@ -1,0 +1,34 @@
+import dayjs from 'dayjs';
+import { db } from './database';
+import type { DiaryEvent } from '@/types';
+
+export async function insertEvent(
+  event: Omit<DiaryEvent, 'id' | 'created_at'>
+): Promise<number> {
+  const result = await db.runAsync(
+    `INSERT INTO events (type, timestamp, notes, severity, bristol_type, created_at)
+     VALUES (?, ?, ?, ?, ?, ?)`,
+    [
+      event.type,
+      event.timestamp,
+      event.notes ?? null,
+      event.severity ?? null,
+      event.bristol_type ?? null,
+      Date.now(),
+    ]
+  );
+  return result.lastInsertRowId;
+}
+
+export async function getEventsByDate(dateStr: string): Promise<DiaryEvent[]> {
+  const start = dayjs(dateStr).startOf('day').valueOf();
+  const end = dayjs(dateStr).add(1, 'day').startOf('day').valueOf();
+  return db.getAllAsync<DiaryEvent>(
+    `SELECT * FROM events WHERE timestamp >= ? AND timestamp < ? ORDER BY timestamp ASC`,
+    [start, end]
+  );
+}
+
+export async function deleteEvent(id: number): Promise<void> {
+  await db.runAsync(`DELETE FROM events WHERE id = ?`, [id]);
+}

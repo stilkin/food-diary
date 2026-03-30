@@ -1,0 +1,31 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import type { Settings } from '@/types';
+
+const DEFAULTS: Settings = {
+  windowHours: 8,
+  notificationMinutes: 30,
+  toiletTrackingEnabled: true,
+  bristolScaleEnabled: false,
+};
+
+const KEY = (k: string) => `settings.${k}`;
+
+export async function loadSettings(): Promise<Settings> {
+  const keys = Object.keys(DEFAULTS) as (keyof Settings)[];
+  const pairs = await AsyncStorage.multiGet(keys.map(KEY));
+  const result = { ...DEFAULTS };
+  for (const [rawKey, value] of pairs) {
+    if (value === null) continue;
+    const key = rawKey.replace('settings.', '') as keyof Settings;
+    (result as Record<keyof Settings, unknown>)[key] =
+      typeof DEFAULTS[key] === 'boolean' ? value === 'true' : Number(value);
+  }
+  return result;
+}
+
+export async function saveSetting<K extends keyof Settings>(
+  key: K,
+  value: Settings[K]
+): Promise<void> {
+  await AsyncStorage.setItem(KEY(key), String(value));
+}

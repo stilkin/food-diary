@@ -1,21 +1,26 @@
 import { useEffect, useState } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
-import { Slot } from 'expo-router';
+import { Stack } from 'expo-router';
 import { runMigrations } from '@/db/migrations';
+import { useAppStore } from '@/store';
 
 export default function RootLayout() {
-  const [dbReady, setDbReady] = useState(false);
+  const [ready, setReady] = useState(false);
+  const loadSettings = useAppStore((s) => s.loadSettings);
+  const loadEventsForDate = useAppStore((s) => s.loadEventsForDate);
+  const selectedDate = useAppStore((s) => s.selectedDate);
 
   useEffect(() => {
-    runMigrations()
-      .then(() => setDbReady(true))
+    Promise.all([runMigrations(), loadSettings()])
+      .then(() => loadEventsForDate(selectedDate))
+      .then(() => setReady(true))
       .catch((err) => {
-        console.error('DB migration failed:', err);
-        setDbReady(true); // don't hang forever on migration failure
+        console.error('Startup failed:', err);
+        setReady(true);
       });
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (!dbReady) {
+  if (!ready) {
     return (
       <View style={styles.splash}>
         <ActivityIndicator size="large" />
@@ -23,7 +28,7 @@ export default function RootLayout() {
     );
   }
 
-  return <Slot />;
+  return <Stack screenOptions={{ headerShown: false }} />;
 }
 
 const styles = StyleSheet.create({
