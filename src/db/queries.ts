@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { db } from './database';
-import type { DiaryEvent } from '@/types';
+import type { DiaryEvent, DiaryEventWithImage } from '@/types';
 
 export async function insertEvent(
   event: Omit<DiaryEvent, 'id' | 'created_at'>
@@ -31,6 +31,24 @@ export async function getEventsByDate(dateStr: string): Promise<DiaryEvent[]> {
 
 export async function deleteEvent(id: number): Promise<void> {
   await db.runAsync(`DELETE FROM events WHERE id = ?`, [id]);
+}
+
+export async function getEventsByDateRange(
+  start: Date,
+  end: Date
+): Promise<DiaryEventWithImage[]> {
+  const startMs = dayjs(start).startOf('day').valueOf();
+  const endMs   = dayjs(end).endOf('day').valueOf();
+  return db.getAllAsync<DiaryEventWithImage>(
+    `SELECT e.*, i.file_path AS image_path
+     FROM events e
+     LEFT JOIN images i ON i.event_id = e.id AND i.id = (
+       SELECT MIN(id) FROM images WHERE event_id = e.id
+     )
+     WHERE e.timestamp >= ? AND e.timestamp <= ?
+     ORDER BY e.timestamp ASC`,
+    [startMs, endMs]
+  );
 }
 
 export async function insertImage(

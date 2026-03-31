@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
+import { router } from 'expo-router';
 import { useAppStore } from '@/store';
 import { loadApiKey, saveApiKey, clearApiKey } from '@/settings/apiKey';
 import type { Settings } from '@/types';
@@ -149,6 +150,12 @@ export default function SettingsScreen() {
             <Text style={styles.apiKeySaveBtnText}>{apiKeySaved ? 'Saved' : 'Save'}</Text>
           </TouchableOpacity>
         </View>
+        <Text style={styles.sectionHeader}>Export</Text>
+
+        <TouchableOpacity style={styles.row} onPress={() => router.push('/export')}>
+          <Text style={styles.rowLabel}>Export diary</Text>
+          <Text style={styles.chevron}>›</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -230,4 +237,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#34c759',
   },
   apiKeySaveBtnText: { color: '#fff', fontSize: 15, fontWeight: '600' },
+  chevron: { fontSize: 22, color: '#c7c7cc' },
 });

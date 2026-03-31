@@ -10,6 +10,10 @@ export interface DiaryEvent {
   created_at: number;
 }
 
+export interface DiaryEventWithImage extends DiaryEvent {
+  image_path: string | null;
+}
+
 export interface Settings {
   windowHours: number;              // default 8
   notificationMinutes: number;      // default 30

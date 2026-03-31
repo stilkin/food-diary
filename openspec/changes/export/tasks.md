@@ -1,6 +1,6 @@
 ## 1. Data Query
 
-- [ ] 1.1 Add `getEventsByDateRange(startDate: Date, endDate: Date): Promise<Event[]>` to `src/db/queries.ts` — returns all events (with image paths joined) within the range, sorted by timestamp ascending
+- [x] 1.1 Add `getEventsByDateRange(startDate: Date, endDate: Date): Promise<Event[]>` to `src/db/queries.ts` — returns all events (with image paths joined) within the range, sorted by timestamp ascending
 
 ## 2. HTML Template
 

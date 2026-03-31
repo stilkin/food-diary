@@ -28,7 +28,11 @@ export default function RootLayout() {
     );
   }
 
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="export" options={{ presentation: 'modal' }} />
+    </Stack>
+  );
 }
 
 const styles = StyleSheet.create({
