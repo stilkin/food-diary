@@ -97,15 +97,6 @@ export default function SettingsScreen() {
           max={24}
           onChange={(v) => update('windowHours', v)}
         />
-        <Stepper
-          label="Notification lead time"
-          value={settings.notificationMinutes}
-          unit="min"
-          min={0}
-          max={120}
-          onChange={(v) => update('notificationMinutes', v)}
-        />
-
         <Text style={styles.sectionHeader}>Logging</Text>
 
         <View style={styles.row}>

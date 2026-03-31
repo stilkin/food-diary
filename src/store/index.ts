@@ -33,7 +33,6 @@ type AppStore = UIState & EventsSlice & SettingsSlice;
 
 const DEFAULT_SETTINGS: Settings = {
   windowHours: 8,
-  notificationMinutes: 30,
   toiletTrackingEnabled: true,
   bristolScaleEnabled: false,
 };

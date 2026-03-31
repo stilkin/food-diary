@@ -21,10 +21,6 @@ import { insertEvent, insertImage } from '@/db/queries';
 import { resizeForStorage } from '@/images/processImage';
 import { describeImage } from '@/ai/describeImage';
 import { loadApiKey } from '@/settings/apiKey';
-import {
-  requestPermissionIfNeeded,
-  scheduleFastingNotification,
-} from '@/notifications/fastingWindow';
 import { useAppStore } from '@/store';
 
 export default function FoodEntryScreen() {
@@ -38,8 +34,6 @@ export default function FoodEntryScreen() {
   const [aiError, setAiError] = useState<string | null>(null);
 
   const addEvent = useAppStore((s) => s.addEvent);
-  const events = useAppStore((s) => s.events);
-  const settings = useAppStore((s) => s.settings);
 
   async function handleCamera() {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
@@ -119,16 +113,6 @@ export default function FoodEntryScreen() {
       created_at: Date.now(),
     };
     addEvent(saved);
-
-    // Schedule / reschedule fasting window notification
-    const allFoodToday = [...events, saved].filter((e) => e.type === 'food');
-    const windowStart = Math.min(...allFoodToday.map((e) => e.timestamp));
-    const windowEnd = windowStart + settings.windowHours * 3_600_000;
-    const permitted = await requestPermissionIfNeeded();
-    if (permitted) {
-      await scheduleFastingNotification(windowEnd, settings.notificationMinutes);
-    }
-
     router.back();
   }
 

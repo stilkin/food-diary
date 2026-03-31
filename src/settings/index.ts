@@ -3,7 +3,6 @@ import type { Settings } from '@/types';
 
 const DEFAULTS: Settings = {
   windowHours: 8,
-  notificationMinutes: 30,
   toiletTrackingEnabled: true,
   bristolScaleEnabled: false,
 };

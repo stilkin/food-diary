@@ -16,7 +16,6 @@ export interface DiaryEventWithImage extends DiaryEvent {
 
 export interface Settings {
   windowHours: number;              // default 8
-  notificationMinutes: number;      // default 30
   toiletTrackingEnabled: boolean;   // default true
   bristolScaleEnabled: boolean;     // default false
 }
