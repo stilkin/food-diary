@@ -110,6 +110,7 @@ export default function FoodEntryScreen() {
       notes: notes.trim() || null,
       severity: null,
       bristol_type: null,
+      name: null,
       created_at: Date.now(),
     };
     addEvent(saved);

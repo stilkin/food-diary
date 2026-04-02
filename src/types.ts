@@ -1,4 +1,4 @@
-export type EventType = 'food' | 'ache' | 'toilet';
+export type EventType = 'food' | 'ache' | 'toilet' | 'medication';
 
 export interface DiaryEvent {
   id: number;
@@ -7,6 +7,7 @@ export interface DiaryEvent {
   notes: string | null;
   severity: number | null;       // 1–5, ache only
   bristol_type: number | null;   // 1–7, toilet only
+  name: string | null;           // medication name, medication only
   created_at: number;
 }
 

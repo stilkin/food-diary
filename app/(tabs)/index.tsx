@@ -85,6 +85,7 @@ const TYPE_ICONS: Record<EventType, string> = {
   food: '🍽',
   ache: '⚡',
   toilet: '🚽',
+  medication: '💊',
 };
 
 interface EventRowProps {
@@ -104,11 +105,16 @@ function EventRow({ event, onDelete }: EventRowProps) {
     );
   }
 
+  const primaryLabel = event.type === 'medication' && event.name ? event.name : null;
+
   return (
     <TouchableOpacity style={styles.row} onLongPress={handleLongPress}>
       <Text style={styles.rowIcon}>{TYPE_ICONS[event.type]}</Text>
       <View style={styles.rowContent}>
         <Text style={styles.rowTime}>{dayjs(event.timestamp).format('HH:mm')}</Text>
+        {primaryLabel ? (
+          <Text style={styles.rowPrimaryLabel} numberOfLines={1}>{primaryLabel}</Text>
+        ) : null}
         {event.notes ? (
           <Text style={styles.rowNotes} numberOfLines={1}>
             {event.notes}
@@ -253,6 +259,7 @@ const styles = StyleSheet.create({
   rowIcon: { fontSize: 22, marginRight: 12 },
   rowContent: { flex: 1 },
   rowTime: { fontSize: 15, fontWeight: '500' },
+  rowPrimaryLabel: { fontSize: 15, fontWeight: '500', marginTop: 2 },
   rowNotes: { fontSize: 13, color: '#888', marginTop: 2 },
   rowMeta: { fontSize: 12, color: '#aaa', marginTop: 2 },
 });

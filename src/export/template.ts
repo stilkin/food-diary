@@ -39,6 +39,7 @@ export function buildHtml(
         body += `<div class="event">`;
         body += `<div class="time">${time}</div>`;
         body += `<div class="type">${type}</div>`;
+        if (e.type === 'medication' && e.name) body += `<div class="primary-label">${esc(e.name)}</div>`;
         if (e.notes) body += `<div class="notes">${esc(e.notes)}</div>`;
         if (e.severity != null) body += `<div class="detail">Severity: ${e.severity}/5</div>`;
         if (e.bristol_type != null) body += `<div class="detail">Bristol type: ${e.bristol_type}</div>`;
@@ -61,6 +62,7 @@ export function buildHtml(
     .event { margin-bottom: 14px; padding-left: 10px; border-left: 3px solid #eee; }
     .time { font-size: 12px; color: #888; }
     .type { font-size: 13px; font-weight: bold; margin-top: 2px; }
+    .primary-label { font-size: 13px; font-weight: bold; margin-top: 2px; }
     .notes { font-size: 13px; margin-top: 2px; }
     .detail { font-size: 12px; color: #555; margin-top: 2px; }
     img { max-width: 200px; max-height: 200px; margin-top: 6px; display: block; border-radius: 4px; }

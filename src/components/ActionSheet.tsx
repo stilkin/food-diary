@@ -18,6 +18,7 @@ interface ActionSheetProps {
 const BASE_OPTIONS = [
   { label: 'Food', key: 'food' as const },
   { label: 'Ache', key: 'ache' as const },
+  { label: 'Medication', key: 'medication' as const },
 ];
 
 const TOILET_OPTION = { label: 'Toilet break', key: 'toilet' as const };

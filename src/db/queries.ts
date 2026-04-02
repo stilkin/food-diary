@@ -3,17 +3,18 @@ import { db } from './database';
 import type { DiaryEvent, DiaryEventWithImage } from '@/types';
 
 export async function insertEvent(
-  event: Omit<DiaryEvent, 'id' | 'created_at'>
+  event: Omit<DiaryEvent, 'id' | 'created_at' | 'name'> & { name?: string | null }
 ): Promise<number> {
   const result = await db.runAsync(
-    `INSERT INTO events (type, timestamp, notes, severity, bristol_type, created_at)
-     VALUES (?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO events (type, timestamp, notes, severity, bristol_type, name, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
     [
       event.type,
       event.timestamp,
       event.notes ?? null,
       event.severity ?? null,
       event.bristol_type ?? null,
+      event.name ?? null,
       Date.now(),
     ]
   );
@@ -49,6 +50,13 @@ export async function getEventsByDateRange(
      ORDER BY e.timestamp ASC`,
     [startMs, endMs]
   );
+}
+
+export async function getMedicationNames(): Promise<string[]> {
+  const rows = await db.getAllAsync<{ name: string }>(
+    `SELECT DISTINCT name FROM events WHERE type='medication' AND name IS NOT NULL ORDER BY name`
+  );
+  return rows.map((r) => r.name);
 }
 
 export async function insertImage(

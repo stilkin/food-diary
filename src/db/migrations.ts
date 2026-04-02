@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { db } from './database';
 
-const CURRENT_SCHEMA_VERSION = 1;
+const CURRENT_SCHEMA_VERSION = 2;
 
 export async function runMigrations(): Promise<void> {
   await db.execAsync(`
@@ -12,6 +12,7 @@ export async function runMigrations(): Promise<void> {
       notes        TEXT,
       severity     INTEGER,
       bristol_type INTEGER,
+      name         TEXT,
       created_at   INTEGER NOT NULL
     );
 
@@ -27,7 +28,15 @@ export async function runMigrations(): Promise<void> {
   `);
 
   const existing = await AsyncStorage.getItem('schema_version');
-  if (existing === null) {
+  const version = existing !== null ? parseInt(existing, 10) : 0;
+
+  if (version < 2) {
+    // Migration v1 → v2: add name column for medication entries
+    try {
+      await db.execAsync(`ALTER TABLE events ADD COLUMN name TEXT`);
+    } catch {
+      // Column may already exist if table was just created above — safe to ignore
+    }
     await AsyncStorage.setItem('schema_version', String(CURRENT_SCHEMA_VERSION));
   }
 }

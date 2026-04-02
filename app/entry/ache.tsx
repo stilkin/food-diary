@@ -37,6 +37,7 @@ export default function AcheEntryScreen() {
       notes: notes.trim() || null,
       severity,
       bristol_type: null,
+      name: null,
       created_at: Date.now(),
     });
     router.back();

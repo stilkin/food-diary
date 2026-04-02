@@ -38,6 +38,7 @@ export default function ToiletEntryScreen() {
       notes: notes.trim() || null,
       severity: null,
       bristol_type: bristolEnabled ? bristolType : null,
+      name: null,
       created_at: Date.now(),
     });
     router.back();
