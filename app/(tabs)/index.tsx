@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   View,
@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import dayjs from 'dayjs';
 import { deleteEventWithImages } from '@/db/queries';
 import { useAppStore } from '@/store';
@@ -80,11 +81,11 @@ function FastingWindowBanner({ events, windowHours }: FastingWindowBannerProps) 
   );
 }
 
-const TYPE_ICONS: Record<EventType, string> = {
-  food: '🍽',
-  ache: '⚡',
-  toilet: '🚽',
-  medication: '💊',
+const TYPE_ICONS: Record<EventType, React.ComponentProps<typeof Ionicons>['name']> = {
+  food: 'restaurant-outline',
+  ache: 'flash-outline',
+  toilet: 'water-outline',
+  medication: 'medical-outline',
 };
 
 interface EventRowProps {
@@ -108,7 +109,12 @@ function EventRow({ event, onDelete }: EventRowProps) {
 
   return (
     <TouchableOpacity style={styles.row} onLongPress={handleLongPress}>
-      <Text style={styles.rowIcon}>{TYPE_ICONS[event.type]}</Text>
+      <Ionicons
+        name={TYPE_ICONS[event.type]}
+        size={22}
+        color={event.type === 'food' && event.breaks_fast === 0 ? colors.disabled : colors.primary}
+        style={styles.rowIcon}
+      />
       <View style={styles.rowContent}>
         <Text style={styles.rowTime}>{dayjs(event.timestamp).format('HH:mm')}</Text>
         {primaryLabel ? (
@@ -249,7 +255,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.divider,
   },
-  rowIcon: { fontSize: 22, marginRight: 12 },
+  rowIcon: { marginRight: 12 },
   rowContent: { flex: 1 },
   rowTime: { fontSize: 15, fontWeight: '500' },
   rowPrimaryLabel: { fontSize: 15, fontWeight: '500', marginTop: 2 },
