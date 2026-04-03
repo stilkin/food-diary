@@ -1,6 +1,13 @@
 import dayjs from 'dayjs';
 import type { DiaryEventWithImage } from '@/types';
 
+const TYPE_EMOJI: Record<string, string> = {
+  food: '🍽️',
+  ache: '⚡',
+  toilet: '🚽',
+  medication: '💊',
+};
+
 function esc(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
@@ -36,16 +43,19 @@ export function buildHtml(
       for (const e of dayEvents) {
         const time = dayjs(e.timestamp).format('HH:mm');
         const type = e.type.charAt(0).toUpperCase() + e.type.slice(1);
-        let header = `${time} — ${type}`;
-        if (e.type === 'medication' && e.name) header += ` — ${esc(e.name)}`;
-        if (e.severity != null) header += ` — Severity: ${e.severity}/5`;
-        if (e.bristol_type != null) header += ` — Bristol: ${e.bristol_type}`;
-        if (e.type === 'food' && e.breaks_fast === 0) header += ` (fasting-safe)`;
+        const icon = TYPE_EMOJI[e.type];
+        let detail = '';
+        if (e.type === 'medication' && e.name) detail = ` — ${esc(e.name)}`;
+        if (e.severity != null) detail = ` — Severity: ${e.severity}/5`;
+        if (e.bristol_type != null) detail = ` — Bristol: ${e.bristol_type}`;
+        if (e.type === 'food' && e.breaks_fast === 0) detail = ` (fasting-safe)`;
         body += `<div class="event">`;
-        body += `<div class="header">${header}</div>`;
+        body += `<div class="time-col">${icon} ${time}</div>`;
+        body += `<div class="content-col">`;
+        body += `<div class="header">— <b>${type}</b>${detail}</div>`;
         if (e.notes) body += `<div class="notes">${esc(e.notes)}</div>`;
         if (images[e.id]) body += `<img src="${images[e.id]}" />`;
-        body += `</div>`;
+        body += `</div></div>`;
       }
     }
   }
@@ -59,9 +69,11 @@ export function buildHtml(
     body { font-family: sans-serif; font-size: 14px; color: #222; margin: 0; padding: 16px; }
     h1 { font-size: 20px; margin: 0 0 4px; }
     .meta { font-size: 12px; color: #888; margin-bottom: 24px; }
-    h2 { font-size: 15px; font-weight: bold; margin: 14px 0 8px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
-    .event { margin-bottom: 8px; padding-left: 10px; border-left: 3px solid #eee; }
-    .header { font-size: 13px; font-weight: bold; }
+    h2 { font-size: 15px; font-weight: bold; margin: 14px 0 8px; border-bottom: 1px solid #2D7D4F; padding-bottom: 4px; color: #2D7D4F; }
+    .event { margin-bottom: 8px; padding-left: 10px; border-left: 3px solid #A8D5B8; display: grid; grid-template-columns: auto 1fr; gap: 0 8px; }
+    .time-col { font-size: 13px; color: #888; white-space: nowrap; }
+    .content-col { min-width: 0; }
+    .header { font-size: 13px; }
     .notes { font-size: 13px; margin-top: 2px; }
     img { width: 100px; height: 100px; object-fit: cover; margin-top: 4px; display: block; border-radius: 4px; }
     .empty { color: #aaa; text-align: center; padding: 40px 0; }
