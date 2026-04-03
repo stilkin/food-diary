@@ -31,8 +31,8 @@
 
 ## 7. Smoke Test
 
-- [ ] 7.1 Verify migration: launch on a device/emulator with existing data — confirm app starts without error and existing entries are intact
-- [ ] 7.2 Log a medication entry — verify it appears on the timeline with the correct icon and name
-- [ ] 7.3 Test autocomplete — log two medications, open form again, confirm both appear as suggestions; typing filters the list; tapping fills the field
-- [ ] 7.4 Test sanitization — enter " ibuprofen 400mg " and confirm stored/displayed as "Ibuprofen 400mg" (only alphabetic word-initial letters are capitalised)
-- [ ] 7.5 Export a date range containing a medication entry — verify name and notes appear in the PDF
+- [x] 7.1 Verify migration: launch on a device/emulator with existing data — confirm app starts without error and existing entries are intact
+- [x] 7.2 Log a medication entry — verify it appears on the timeline with the correct icon and name
+- [x] 7.3 Test autocomplete — log two medications, open form again, confirm both appear as suggestions; typing filters the list; tapping fills the field
+- [x] 7.4 Test sanitization — enter " ibuprofen 400mg " and confirm stored/displayed as "Ibuprofen 400mg" (only alphabetic word-initial letters are capitalised)
+- [x] 7.5 Export a date range containing a medication entry — verify name and notes appear in the PDF

@@ -28,4 +28,4 @@
 ## 5. Smoke Test
 
 - [ ] 5.1 Run on iOS simulator — confirm app launches, tabs switch, FAB opens/closes action sheet, no console errors
-- [ ] 5.2 Run on Android emulator — confirm same behaviour
+- [x] 5.2 Run on Android emulator — confirm same behaviour
