@@ -58,3 +58,11 @@ Each phase is a self-contained OpenSpec change in `openspec/changes/`. See `CLAU
 - In-app correlation analysis (which foods precede ache events?)
 - Dynamic AI model selection via OpenRouter
 - CSV export option
+
+## Support
+
+If you enjoy Gutsy and want to support its development, consider buying me a drink:
+
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/stilkin)
+
+Your support helps me continue developing and improving Gutsy! ☕
