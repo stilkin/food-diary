@@ -1,17 +1,17 @@
 ## 1. Single-Line Entry Headers
 
-- [ ] 1.1 Refactor entry HTML in `src/export/template.ts` — merge time and type into a single `<div class="header">` rendered as `HH:mm — Type`
-- [ ] 1.2 Append inline details to the header: medication name, ache severity (`Severity: N/5`), toilet Bristol type (`Bristol: N`), fasting-safe label (`(fasting-safe)`)
-- [ ] 1.3 Keep notes on a separate line below the header (only rendered when present)
+- [x] 1.1 Refactor entry HTML in `src/export/template.ts` — merge time and type into a single `<div class="header">` rendered as `HH:mm — Type`
+- [x] 1.2 Append inline details to the header: medication name, ache severity (`Severity: N/5`), toilet Bristol type (`Bristol: N`), fasting-safe label (`(fasting-safe)`)
+- [x] 1.3 Keep notes on a separate line below the header (only rendered when present)
 
 ## 2. Compact Image Styling
 
-- [ ] 2.1 Update `img` CSS in `src/export/template.ts` — set `width: 100px; height: 100px; object-fit: cover;` for square center-cropped thumbnails
+- [x] 2.1 Update `img` CSS in `src/export/template.ts` — set `width: 100px; height: 100px; object-fit: cover;` for square center-cropped thumbnails
 
 ## 3. Tighter Spacing
 
-- [ ] 3.1 Reduce `.event` margin-bottom from 14px to 8px
-- [ ] 3.2 Reduce `h2` top margin from 20px to 14px
+- [x] 3.1 Reduce `.event` margin-bottom from 14px to 8px
+- [x] 3.2 Reduce `h2` top margin from 20px to 14px
 
 ## 4. Smoke Test
 
