@@ -4,11 +4,11 @@ import { db } from './database';
 import type { DiaryEvent, DiaryEventWithImage } from '@/types';
 
 export async function insertEvent(
-  event: Omit<DiaryEvent, 'id' | 'created_at' | 'name'> & { name?: string | null }
+  event: Omit<DiaryEvent, 'id' | 'created_at' | 'name' | 'breaks_fast'> & { name?: string | null; breaks_fast?: number }
 ): Promise<number> {
   const result = await db.runAsync(
-    `INSERT INTO events (type, timestamp, notes, severity, bristol_type, name, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO events (type, timestamp, notes, severity, bristol_type, name, breaks_fast, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       event.type,
       event.timestamp,
@@ -16,6 +16,7 @@ export async function insertEvent(
       event.severity ?? null,
       event.bristol_type ?? null,
       event.name ?? null,
+      event.breaks_fast ?? 1,
       Date.now(),
     ]
   );
@@ -66,6 +67,51 @@ export async function getEventsByDateRange(
      ORDER BY e.timestamp ASC`,
     [startMs, endMs]
   );
+}
+
+export async function getEventById(id: number): Promise<DiaryEvent | null> {
+  return db.getFirstAsync<DiaryEvent>(`SELECT * FROM events WHERE id = ?`, [id]);
+}
+
+export async function updateEvent(
+  id: number,
+  fields: {
+    timestamp: number;
+    notes: string | null;
+    severity: number | null;
+    bristol_type: number | null;
+    name: string | null;
+    breaks_fast: number;
+  }
+): Promise<void> {
+  await db.runAsync(
+    `UPDATE events SET timestamp = ?, notes = ?, severity = ?, bristol_type = ?, name = ?, breaks_fast = ? WHERE id = ?`,
+    [fields.timestamp, fields.notes, fields.severity, fields.bristol_type, fields.name, fields.breaks_fast, id]
+  );
+}
+
+export async function getImageForEvent(eventId: number): Promise<string | null> {
+  const row = await db.getFirstAsync<{ file_path: string }>(
+    `SELECT file_path FROM images WHERE event_id = ? ORDER BY id ASC LIMIT 1`,
+    [eventId]
+  );
+  return row?.file_path ?? null;
+}
+
+export async function removeImageForEvent(eventId: number): Promise<void> {
+  const rows = await db.getAllAsync<{ file_path: string }>(
+    `SELECT file_path FROM images WHERE event_id = ?`,
+    [eventId]
+  );
+  if (rows.length === 0) return;
+  await db.runAsync(`DELETE FROM images WHERE event_id = ?`, [eventId]);
+  for (const row of rows) {
+    try {
+      await FileSystem.deleteAsync(row.file_path, { idempotent: true });
+    } catch {
+      // Missing file is non-fatal
+    }
+  }
 }
 
 export async function getMedicationNames(): Promise<string[]> {

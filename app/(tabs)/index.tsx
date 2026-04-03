@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   View,
@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import dayjs from 'dayjs';
 import { deleteEventWithImages } from '@/db/queries';
 import { useAppStore } from '@/store';
@@ -67,9 +68,9 @@ interface FastingWindowBannerProps {
 }
 
 function FastingWindowBanner({ events, windowHours }: FastingWindowBannerProps) {
-  const foodEvents = events.filter((e) => e.type === 'food');
-  if (foodEvents.length === 0) return null;
-  const windowStart = Math.min(...foodEvents.map((e) => e.timestamp));
+  const fastBreakingEvents = events.filter((e) => e.type === 'food' && e.breaks_fast !== 0);
+  if (fastBreakingEvents.length === 0) return null;
+  const windowStart = Math.min(...fastBreakingEvents.map((e) => e.timestamp));
   const windowEnd = windowStart + windowHours * 3_600_000;
   return (
     <View style={styles.banner}>
@@ -80,19 +81,20 @@ function FastingWindowBanner({ events, windowHours }: FastingWindowBannerProps) 
   );
 }
 
-const TYPE_ICONS: Record<EventType, string> = {
-  food: '🍽',
-  ache: '⚡',
-  toilet: '🚽',
-  medication: '💊',
+const TYPE_ICONS: Record<EventType, React.ComponentProps<typeof Ionicons>['name']> = {
+  food: 'restaurant-outline',
+  ache: 'flash-outline',
+  toilet: 'water-outline',
+  medication: 'medical-outline',
 };
 
 interface EventRowProps {
   event: DiaryEvent;
   onDelete: () => void;
+  onPress: () => void;
 }
 
-function EventRow({ event, onDelete }: EventRowProps) {
+function EventRow({ event, onDelete, onPress }: EventRowProps) {
   function handleLongPress() {
     Alert.alert(
       'Delete entry?',
@@ -107,8 +109,13 @@ function EventRow({ event, onDelete }: EventRowProps) {
   const primaryLabel = event.type === 'medication' && event.name ? event.name : null;
 
   return (
-    <TouchableOpacity style={styles.row} onLongPress={handleLongPress}>
-      <Text style={styles.rowIcon}>{TYPE_ICONS[event.type]}</Text>
+    <TouchableOpacity style={styles.row} onPress={onPress} onLongPress={handleLongPress}>
+      <Ionicons
+        name={TYPE_ICONS[event.type]}
+        size={22}
+        color={event.type === 'food' && event.breaks_fast === 0 ? colors.disabled : colors.primary}
+        style={styles.rowIcon}
+      />
       <View style={styles.rowContent}>
         <Text style={styles.rowTime}>{dayjs(event.timestamp).format('HH:mm')}</Text>
         {primaryLabel ? (
@@ -124,6 +131,9 @@ function EventRow({ event, onDelete }: EventRowProps) {
         )}
         {event.bristol_type != null && (
           <Text style={styles.rowMeta}>Bristol type {event.bristol_type}</Text>
+        )}
+        {event.type === 'food' && event.breaks_fast === 0 && (
+          <Text style={styles.rowMeta}>fasting-safe</Text>
         )}
       </View>
     </TouchableOpacity>
@@ -159,7 +169,8 @@ export default function TimelineScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.topAccent}>
+      <View style={styles.container}>
       <DateHeader
         selectedDate={selectedDate}
         onPrev={() =>
@@ -177,7 +188,11 @@ export default function TimelineScreen() {
         data={events}
         keyExtractor={(e) => String(e.id)}
         renderItem={({ item }) => (
-          <EventRow event={item} onDelete={() => handleDelete(item)} />
+          <EventRow
+            event={item}
+            onDelete={() => handleDelete(item)}
+            onPress={() => router.push(`/entry/${item.type}?id=${item.id}`)}
+          />
         )}
         ListEmptyComponent={
           <Text style={styles.empty}>No entries for this day.</Text>
@@ -191,6 +206,7 @@ export default function TimelineScreen() {
         onClose={closeActionSheet}
         onSelect={handleSelect}
       />
+      </View>
     </SafeAreaView>
   );
 }
@@ -199,6 +215,7 @@ export default function TimelineScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
+  topAccent: { flex: 1, backgroundColor: colors.primary },
 
   // Date header
   dateHeader: {
@@ -217,13 +234,13 @@ const styles = StyleSheet.create({
 
   // Fasting banner
   banner: {
-    backgroundColor: '#f0f7ff',
+    backgroundColor: '#f0f7f3',
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#d0e8ff',
+    borderBottomColor: '#c8e6d4',
   },
-  bannerText: { fontSize: 14, color: '#0057b3' },
+  bannerText: { fontSize: 14, color: colors.primary },
 
   // Event list
   listContent: { flexGrow: 1, paddingBottom: 100 },
@@ -243,7 +260,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.divider,
   },
-  rowIcon: { fontSize: 22, marginRight: 12 },
+  rowIcon: { marginRight: 12 },
   rowContent: { flex: 1 },
   rowTime: { fontSize: 15, fontWeight: '500' },
   rowPrimaryLabel: { fontSize: 15, fontWeight: '500', marginTop: 2 },
