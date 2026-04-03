@@ -22,7 +22,7 @@
 
 ## 5. Smoke Test
 
-- [ ] 5.1 Export a single day with food, ache, and toilet entries — verify all appear correctly grouped and formatted in the PDF
-- [ ] 5.2 Export a range with photo entries — verify images appear in the PDF at reasonable size
-- [ ] 5.3 Export an empty date range — verify PDF contains the "no entries" message
-- [ ] 5.4 Test share sheet on iOS and Android — verify PDF is openable in a PDF viewer
+- [x] 5.1 Export a single day with food, ache, and toilet entries — verify all appear correctly grouped and formatted in the PDF
+- [x] 5.2 Export a range with photo entries — verify images appear in the PDF at reasonable size
+- [x] 5.3 Export an empty date range — verify PDF contains the "no entries" message
+- [x] 5.4 Test share sheet on iOS and Android — verify PDF is openable in a PDF viewer

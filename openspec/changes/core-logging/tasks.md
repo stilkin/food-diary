@@ -37,6 +37,6 @@
 ## 6. Integration & Smoke Test
 
 - [ ] 6.1 Verify end-to-end: log food → timeline updates → notification scheduled → navigate to past day → events shown correctly
-- [ ] 6.2 Verify toilet tracking toggle hides/shows the action sheet option and the entry screen
-- [ ] 6.3 Verify Bristol scale toggle hides/shows the selector in the toilet entry form
-- [ ] 6.4 Verify delete removes the event from the timeline and cleans up any associated image files
+- [x] 6.2 Verify toilet tracking toggle hides/shows the action sheet option and the entry screen
+- [x] 6.3 Verify Bristol scale toggle hides/shows the selector in the toilet entry form
+- [x] 6.4 Verify delete removes the event from the timeline and cleans up any associated image files

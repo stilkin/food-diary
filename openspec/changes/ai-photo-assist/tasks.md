@@ -36,7 +36,7 @@
 
 ## 7. Smoke Test
 
-- [ ] 7.1 Test with no API key: take photo → photo stored → notes field empty → entry saves normally
-- [ ] 7.2 Test with valid API key: take photo → spinner → notes pre-filled → user edits → saves
+- [x] 7.1 Test with no API key: take photo → photo stored → notes field empty → entry saves normally
+- [x] 7.2 Test with valid API key: take photo → spinner → notes pre-filled → user edits → saves
 - [ ] 7.3 Test with invalid API key: take photo → spinner → error message → notes empty → user can still save
-- [ ] 7.4 Test library picker flow on both iOS and Android
+- [x] 7.4 Test library picker flow on both iOS and Android
