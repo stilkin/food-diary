@@ -88,22 +88,30 @@ export default function AcheEntryScreen() {
       <View style={entryFormStyles.field}>
         <Text style={entryFormStyles.label}>Severity (optional)</Text>
         <View style={styles.circleRow}>
-          {[1, 2, 3, 4, 5].map((n) => (
-            <TouchableOpacity
-              key={n}
-              style={[styles.circle, severity === n && styles.circleSelected]}
-              onPress={() => setSeverity(severity === n ? null : n)}
-            >
-              <Text style={[styles.circleText, severity === n && styles.circleTextSelected]}>
-                {n}
-              </Text>
-            </TouchableOpacity>
-          ))}
+          {[1, 2, 3, 4, 5].map((n) => {
+            const color = severityColors[n - 1];
+            const selected = severity === n;
+            return (
+              <TouchableOpacity
+                key={n}
+                style={[styles.circle, { borderColor: color }, selected && { backgroundColor: color }]}
+                onPress={() => setSeverity(selected ? null : n)}
+              >
+                <Text style={{ fontSize: 16, color: selected ? colors.white : color }}>{n}</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+        <View style={styles.labelRow}>
+          <Text style={styles.endLabel}>mild</Text>
+          <Text style={styles.endLabel}>severe</Text>
         </View>
       </View>
     </SafeAreaView>
   );
 }
+
+const severityColors = ['#2D7D4F', '#5A9A72', '#A8D5B8', '#aaa', '#888'];
 
 const styles = StyleSheet.create({
   circleRow: { flexDirection: 'row', gap: 10 },
@@ -112,11 +120,9 @@ const styles = StyleSheet.create({
     height: 44,
     borderRadius: 22,
     borderWidth: 1.5,
-    borderColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  circleSelected: { backgroundColor: colors.primary },
-  circleText: { fontSize: 16, color: colors.primary },
-  circleTextSelected: { color: colors.white },
+  labelRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 4, width: 44 * 5 + 10 * 4 },
+  endLabel: { fontSize: 11, color: colors.secondaryText },
 });

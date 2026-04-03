@@ -90,23 +90,32 @@ export default function ToiletEntryScreen() {
         <View style={entryFormStyles.field}>
           <Text style={entryFormStyles.label}>Bristol type (optional)</Text>
           <View style={styles.bristolRow}>
-            {[1, 2, 3, 4, 5, 6, 7].map((n) => (
-              <TouchableOpacity
-                key={n}
-                style={[styles.circle, bristolType === n && styles.circleSelected]}
-                onPress={() => setBristolType(bristolType === n ? null : n)}
-              >
-                <Text style={[styles.circleText, bristolType === n && styles.circleTextSelected]}>
-                  {n}
-                </Text>
-              </TouchableOpacity>
-            ))}
+            {[1, 2, 3, 4, 5, 6, 7].map((n) => {
+              const color = bristolColors[n - 1];
+              const selected = bristolType === n;
+              return (
+                <TouchableOpacity
+                  key={n}
+                  style={[styles.circle, { borderColor: color }, selected && { backgroundColor: color }]}
+                  onPress={() => setBristolType(selected ? null : n)}
+                >
+                  <Text style={{ fontSize: 16, color: selected ? colors.white : color }}>{n}</Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+          <View style={styles.labelRow}>
+            <Text style={styles.endLabel}>hard</Text>
+            <Text style={styles.endLabel}>loose</Text>
           </View>
         </View>
       )}
     </SafeAreaView>
   );
 }
+
+// Symmetric around 4 (ideal): distance 0=green, distance 3=gray
+const bristolColors = ['#aaa', '#A8D5B8', '#5A9A72', '#2D7D4F', '#5A9A72', '#A8D5B8', '#aaa'];
 
 const styles = StyleSheet.create({
   bristolRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
@@ -115,11 +124,9 @@ const styles = StyleSheet.create({
     height: 44,
     borderRadius: 22,
     borderWidth: 1.5,
-    borderColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  circleSelected: { backgroundColor: colors.primary },
-  circleText: { fontSize: 16, color: colors.primary },
-  circleTextSelected: { color: colors.white },
+  labelRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 4, width: 44 * 7 + 10 * 6 },
+  endLabel: { fontSize: 11, color: colors.secondaryText },
 });
