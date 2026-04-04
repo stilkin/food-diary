@@ -57,8 +57,15 @@ export function buildHtml(
         body += `<div class="time-col">${icon} ${time}</div>`;
         body += `<div class="content-col">`;
         body += `<div class="header">— <b>${type}</b>${detail}</div>`;
-        if (e.notes) body += `<div class="notes">${esc(e.notes)}</div>`;
-        if (images[e.id]) body += `<img src="${images[e.id]}" />`;
+        if (images[e.id] && e.notes) {
+          body += `<div class="media-row">`;
+          body += `<img src="${images[e.id]}" />`;
+          body += `<div class="notes">${esc(e.notes)}</div>`;
+          body += `</div>`;
+        } else {
+          if (e.notes) body += `<div class="notes">${esc(e.notes)}</div>`;
+          if (images[e.id]) body += `<img src="${images[e.id]}" />`;
+        }
         body += `</div></div>`;
       }
     }
@@ -78,7 +85,9 @@ export function buildHtml(
     .time-col { font-size: 13px; color: #888; white-space: nowrap; }
     .content-col { min-width: 0; }
     .header { font-size: 13px; }
-    .notes { font-size: 13px; margin-top: 2px; }
+    .notes { font-size: 13px; margin-top: 2px; max-width: 50%; }
+    .media-row { display: flex; gap: 8px; align-items: flex-start; margin-top: 2px; }
+    .media-row .notes { margin-top: 0; }
     img { width: 100px; height: 100px; object-fit: cover; margin-top: 4px; display: block; border-radius: 4px; }
     .empty { color: #aaa; text-align: center; padding: 40px 0; }
   </style>

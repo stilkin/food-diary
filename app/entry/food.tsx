@@ -54,6 +54,12 @@ export default function FoodEntryScreen() {
   const addEvent = useAppStore((s) => s.addEvent);
   const loadEventsForDate = useAppStore((s) => s.loadEventsForDate);
   const selectedDate = useAppStore((s) => s.selectedDate);
+  const settings = useAppStore((s) => s.settings);
+  const [hasApiKey, setHasApiKey] = useState(false);
+
+  useEffect(() => {
+    loadApiKey().then((key) => setHasApiKey(!!key));
+  }, []);
 
   useEffect(() => {
     if (!editId) return;
@@ -100,22 +106,30 @@ export default function FoodEntryScreen() {
     }
   }
 
-  async function handlePhotoSelected(uri: string) {
-    setPhotoUri(uri);
-    setAiError(null);
-
+  async function runAiDescribe(uri: string) {
     const apiKey = await loadApiKey();
     if (!apiKey) return;
-
     setAiLoading(true);
+    setAiError(null);
     try {
-      const description = await describeImage(uri, apiKey);
+      const description = await describeImage(uri, apiKey, settings.modelTier, settings.language);
       setNotes(description);
     } catch {
       setAiError('AI description failed. You can still add notes manually.');
     } finally {
       setAiLoading(false);
     }
+  }
+
+  async function handlePhotoSelected(uri: string) {
+    setPhotoUri(uri);
+    setAiError(null);
+    await runAiDescribe(uri);
+  }
+
+  function handleRetryAi() {
+    const uri = photoUri ?? existingImagePath;
+    if (uri) runAiDescribe(uri);
   }
 
   async function handleSave() {
@@ -194,37 +208,51 @@ export default function FoodEntryScreen() {
         <Text style={entryFormStyles.label}>Photo</Text>
         {showNewPhoto ? (
           // Freshly picked — remove silently
-          <View style={styles.previewContainer}>
-            <Image source={{ uri: photoUri! }} style={styles.preview} />
-            <TouchableOpacity
-              style={styles.removeBtn}
-              onPress={() => {
-                setPhotoUri(null);
-                setAiError(null);
-              }}
-            >
-              <Text style={styles.removeBtnText}>✕</Text>
-            </TouchableOpacity>
+          <View>
+            <View style={styles.previewContainer}>
+              <Image source={{ uri: photoUri! }} style={styles.preview} />
+              <TouchableOpacity
+                style={styles.removeBtn}
+                onPress={() => {
+                  setPhotoUri(null);
+                  setAiError(null);
+                }}
+              >
+                <Text style={styles.removeBtnText}>✕</Text>
+              </TouchableOpacity>
+            </View>
+            {hasApiKey && !aiLoading && (
+              <TouchableOpacity style={styles.retryBtn} onPress={handleRetryAi}>
+                <Text style={styles.retryBtnText}>↻ Retry AI description</Text>
+              </TouchableOpacity>
+            )}
           </View>
         ) : showExistingImage ? (
           // Stored image — confirm before removing
-          <View style={styles.previewContainer}>
-            <Image source={{ uri: existingImagePath! }} style={styles.preview} />
-            <TouchableOpacity
-              style={styles.removeBtn}
-              onPress={() => {
-                Alert.alert(
-                  'Remove photo?',
-                  'This will permanently delete the stored photo.',
-                  [
-                    { text: 'Cancel', style: 'cancel' },
-                    { text: 'Remove', style: 'destructive', onPress: () => setExistingImageRemoved(true) },
-                  ]
-                );
-              }}
-            >
-              <Text style={styles.removeBtnText}>✕</Text>
-            </TouchableOpacity>
+          <View>
+            <View style={styles.previewContainer}>
+              <Image source={{ uri: existingImagePath! }} style={styles.preview} />
+              <TouchableOpacity
+                style={styles.removeBtn}
+                onPress={() => {
+                  Alert.alert(
+                    'Remove photo?',
+                    'This will permanently delete the stored photo.',
+                    [
+                      { text: 'Cancel', style: 'cancel' },
+                      { text: 'Remove', style: 'destructive', onPress: () => setExistingImageRemoved(true) },
+                    ]
+                  );
+                }}
+              >
+                <Text style={styles.removeBtnText}>✕</Text>
+              </TouchableOpacity>
+            </View>
+            {hasApiKey && !aiLoading && (
+              <TouchableOpacity style={styles.retryBtn} onPress={handleRetryAi}>
+                <Text style={styles.retryBtnText}>↻ Retry AI description</Text>
+              </TouchableOpacity>
+            )}
           </View>
         ) : (
           // No photo
@@ -340,6 +368,8 @@ const styles = StyleSheet.create({
   },
   aiLoadingText: { fontSize: 13, color: colors.secondaryText },
   aiErrorText: { fontSize: 12, color: colors.danger, marginTop: 4 },
+  retryBtn: { marginTop: 8, alignSelf: 'flex-start' },
+  retryBtnText: { fontSize: 14, color: colors.primary },
   backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' },
   sheet: {
     backgroundColor: colors.background,
