@@ -1,18 +1,23 @@
 import { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
+  FlatList,
+  Modal,
   ScrollView,
   View,
   Text,
   Switch,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   StyleSheet,
 } from 'react-native';
 import { router } from 'expo-router';
 import { useAppStore } from '@/store';
 import { loadApiKey, saveApiKey, clearApiKey } from '@/settings/apiKey';
 import { colors, switchColors } from '@/colors';
+import { LANGUAGE_NAMES } from '@/types';
+import type { Language, ModelTier } from '@/types';
 
 // ── Stepper sub-component ─────────────────────────────────────────────────────
 
@@ -58,6 +63,14 @@ export default function SettingsScreen() {
   const { settings, updateSetting } = useAppStore();
   const [apiKey, setApiKey] = useState('');
   const [apiKeySaved, setApiKeySaved] = useState(false);
+  const [showLanguagePicker, setShowLanguagePicker] = useState(false);
+
+  const languages = Object.entries(LANGUAGE_NAMES) as [Language, string][];
+  const tierOptions: { key: ModelTier; label: string }[] = [
+    { key: 'free', label: 'Free' },
+    { key: 'normal', label: 'Normal' },
+    { key: 'premium', label: 'Premium' },
+  ];
 
   useEffect(() => {
     loadApiKey().then((key) => {
@@ -83,6 +96,13 @@ export default function SettingsScreen() {
       <View style={styles.container}>
       <ScrollView>
         <Text style={styles.title}>Settings</Text>
+
+        <Text style={styles.sectionHeader}>Export</Text>
+
+        <TouchableOpacity style={styles.row} onPress={() => router.push('/export')}>
+          <Text style={styles.rowLabel}>Export diary</Text>
+          <Text style={styles.chevron}>›</Text>
+        </TouchableOpacity>
 
         <Text style={styles.sectionHeader}>Fasting Window</Text>
 
@@ -142,14 +162,56 @@ export default function SettingsScreen() {
             <Text style={styles.apiKeySaveBtnText}>{apiKeySaved ? 'Saved' : 'Save'}</Text>
           </TouchableOpacity>
         </View>
-        <Text style={styles.sectionHeader}>Export</Text>
 
-        <TouchableOpacity style={styles.row} onPress={() => router.push('/export')}>
-          <Text style={styles.rowLabel}>Export diary</Text>
-          <Text style={styles.chevron}>›</Text>
+        <View style={styles.row}>
+          <Text style={styles.rowLabel}>Model</Text>
+          <View style={styles.segmented}>
+            {tierOptions.map(({ key, label }) => (
+              <TouchableOpacity
+                key={key}
+                style={[styles.segmentBtn, settings.modelTier === key && styles.segmentBtnActive]}
+                onPress={() => updateSetting('modelTier', key)}
+              >
+                <Text style={[styles.segmentText, settings.modelTier === key && styles.segmentTextActive]}>
+                  {label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        <TouchableOpacity style={styles.row} onPress={() => setShowLanguagePicker(true)}>
+          <Text style={styles.rowLabel}>Description language</Text>
+          <Text style={styles.rowValue}>{LANGUAGE_NAMES[settings.language]} ›</Text>
         </TouchableOpacity>
       </ScrollView>
       </View>
+
+      {/* Language picker modal */}
+      <Modal visible={showLanguagePicker} transparent animationType="slide" onRequestClose={() => setShowLanguagePicker(false)}>
+        <TouchableWithoutFeedback onPress={() => setShowLanguagePicker(false)}>
+          <View style={styles.backdrop} />
+        </TouchableWithoutFeedback>
+        <View style={styles.sheet}>
+          <FlatList
+            data={languages}
+            keyExtractor={([code]) => code}
+            renderItem={({ item: [code, name] }) => (
+              <TouchableOpacity
+                style={styles.sheetOption}
+                onPress={() => {
+                  updateSetting('language', code);
+                  setShowLanguagePicker(false);
+                }}
+              >
+                <Text style={[styles.sheetOptionText, settings.language === code && styles.sheetOptionActive]}>
+                  {name}
+                </Text>
+              </TouchableOpacity>
+            )}
+          />
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -232,4 +294,15 @@ const styles = StyleSheet.create({
   },
   apiKeySaveBtnText: { color: colors.white, fontSize: 15, fontWeight: '600' },
   chevron: { fontSize: 22, color: '#c7c7cc' },
+  rowValue: { fontSize: 15, color: colors.secondaryText },
+  segmented: { flexDirection: 'row', borderRadius: 8, overflow: 'hidden', borderWidth: 1, borderColor: colors.primary },
+  segmentBtn: { paddingVertical: 6, paddingHorizontal: 12 },
+  segmentBtnActive: { backgroundColor: colors.primary },
+  segmentText: { fontSize: 14, color: colors.primary },
+  segmentTextActive: { color: colors.white },
+  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' },
+  sheet: { backgroundColor: colors.background, borderTopLeftRadius: 16, borderTopRightRadius: 16, paddingBottom: 32, maxHeight: '50%' },
+  sheetOption: { paddingVertical: 14, paddingHorizontal: 24, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.divider },
+  sheetOptionText: { fontSize: 17 },
+  sheetOptionActive: { color: colors.primary, fontWeight: '600' },
 });

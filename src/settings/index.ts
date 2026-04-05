@@ -5,6 +5,8 @@ export const DEFAULT_SETTINGS: Settings = {
   windowHours: 8,
   toiletTrackingEnabled: true,
   bristolScaleEnabled: false,
+  language: 'en',
+  modelTier: 'normal',
 };
 
 const KEY = (k: string) => `settings.${k}`;
@@ -16,8 +18,9 @@ export async function loadSettings(): Promise<Settings> {
   for (const [rawKey, value] of pairs) {
     if (value === null) continue;
     const key = rawKey.replace('settings.', '') as keyof Settings;
+    const def = DEFAULT_SETTINGS[key];
     (result as Record<keyof Settings, unknown>)[key] =
-      typeof DEFAULT_SETTINGS[key] === 'boolean' ? value === 'true' : Number(value);
+      typeof def === 'boolean' ? value === 'true' : typeof def === 'number' ? Number(value) : value;
   }
   return result;
 }

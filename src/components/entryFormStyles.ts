@@ -25,7 +25,7 @@ export const entryFormStyles = StyleSheet.create({
     borderColor: colors.divider,
     borderRadius: 8,
     padding: 10,
-    minHeight: 80,
+    minHeight: 140,
     textAlignVertical: 'top',
   },
 });

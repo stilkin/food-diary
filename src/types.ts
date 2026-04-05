@@ -16,8 +16,19 @@ export interface DiaryEventWithImage extends DiaryEvent {
   image_path: string | null;
 }
 
+export type Language = 'en' | 'es' | 'pt' | 'fr' | 'de' | 'it' | 'nl' | 'pl' | 'tr' | 'id';
+export type ModelTier = 'free' | 'normal' | 'premium';
+
+export const LANGUAGE_NAMES: Record<Language, string> = {
+  en: '🇬🇧 English', es: '🇪🇸 Español', pt: '🇵🇹 Português', fr: '🇫🇷 Français',
+  de: '🇩🇪 Deutsch', it: '🇮🇹 Italiano', nl: '🇳🇱 Nederlands', pl: '🇵🇱 Polski',
+  tr: '🇹🇷 Türkçe', id: '🇮🇩 Bahasa Indonesia',
+};
+
 export interface Settings {
   windowHours: number;              // default 8
   toiletTrackingEnabled: boolean;   // default true
   bristolScaleEnabled: boolean;     // default false
+  language: Language;               // default 'en'
+  modelTier: ModelTier;             // default 'normal'
 }
