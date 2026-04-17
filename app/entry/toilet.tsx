@@ -7,10 +7,14 @@ import { useAppStore } from '@/store';
 import { colors } from '@/colors';
 import { entryFormStyles } from '@/components/entryFormStyles';
 import { EntryFormHeader } from '@/components/EntryFormHeader';
+import { DatePickerField } from '@/components/DatePickerField';
 import { TimePickerField } from '@/components/TimePickerField';
 
 export default function ToiletEntryScreen() {
-  const [timestamp, setTimestamp] = useState(new Date());
+  const selectedDate = useAppStore((s) => s.selectedDate);
+  const now = new Date();
+  const [y, m, d] = selectedDate.split('-').map(Number);
+  const [timestamp, setTimestamp] = useState(new Date(y, m - 1, d, now.getHours(), now.getMinutes()));
   const [notes, setNotes] = useState('');
   const [bristolType, setBristolType] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
@@ -20,7 +24,6 @@ export default function ToiletEntryScreen() {
 
   const addEvent = useAppStore((s) => s.addEvent);
   const loadEventsForDate = useAppStore((s) => s.loadEventsForDate);
-  const selectedDate = useAppStore((s) => s.selectedDate);
   const bristolEnabled = useAppStore((s) => s.settings.bristolScaleEnabled);
 
   useEffect(() => {
@@ -73,6 +76,7 @@ export default function ToiletEntryScreen() {
   return (
     <SafeAreaView style={entryFormStyles.container}>
       <EntryFormHeader title="Toilet break" onSave={handleSave} saveDisabled={loading} />
+      <DatePickerField timestamp={timestamp} onChangeDate={setTimestamp} />
       <TimePickerField timestamp={timestamp} onChangeTimestamp={setTimestamp} />
 
       <View style={entryFormStyles.field}>
